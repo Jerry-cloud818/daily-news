@@ -1,23 +1,16 @@
-name: 每日新闻生成 & 部署
+name: 每日新闻生成
 
 on:
   schedule:
     # 每天 UTC 14:00 = 北京时间 22:00
     - cron: '0 14 * * *'
-  workflow_dispatch:  # 手动触发
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,30 +23,15 @@ jobs:
         run: pip install feedparser requests jinja2 beautifulsoup4 lxml
 
       - name: Generate daily news
-        run: |
-          cd daily_news
-          python main.py
+        working-directory: daily_news
+        run: python main.py
 
-      - name: Copy output to docs
+      - name: Update GitHub Pages
         run: |
-          mkdir -p docs
           cp daily_news/output/latest.html docs/index.html
-
-      - name: Commit & push
-        run: |
+          cp daily_news/output/news_*.json docs/ 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html daily_news/output/
-          git diff --staged --quiet || git commit -m "新闻更新 $(date +'%Y-%m-%d %H:%M')"
+          git add docs/
+          git diff --staged --quiet || git commit -m " 新闻更新 $(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')"
           git push
-
-  deploy:
-    needs: generate
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
