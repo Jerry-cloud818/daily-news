@@ -1,0 +1,1362 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日新闻速递 - 2026年05月19日</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                         "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+
+        /* ========== 顶部标题 ========== */
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+        }
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #fda085);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        .header .date { font-size: 0.95em; color: #888; }
+
+        /* ========== 分类标签栏 ========== */
+        .cat-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 16px 0;
+            overflow-x: auto;
+            justify-content: center;
+        }
+        .cat-tab {
+            padding: 10px 22px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            white-space: nowrap;
+            background: rgba(255,255,255,0.06);
+            color: #aaa;
+            border: 1px solid transparent;
+            transition: all 0.25s;
+            user-select: none;
+        }
+        .cat-tab:hover { background: rgba(255,255,255,0.12); color: #ddd; }
+        .cat-tab.active {
+            background: linear-gradient(135deg, rgba(245,87,108,0.25), rgba(240,147,251,0.2));
+            color: #fff;
+            border-color: rgba(245,87,108,0.5);
+        }
+
+        /* ========== 内容面板 ========== */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ========== 国内/国际切换 ========== */
+        .region-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .region-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            color: #888;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .region-btn.active {
+            background: rgba(245,87,108,0.2);
+            color: #f5576c;
+        }
+        .region-btn:hover:not(.active) { color: #ccc; }
+        .region-btn .count {
+            display: inline-block;
+            min-width: 20px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            font-size: 0.75em;
+            margin-left: 4px;
+            padding: 0 6px;
+        }
+        .region-btn.active .count {
+            background: rgba(245,87,108,0.3);
+        }
+
+        /* ========== 新闻列表 ========== */
+        .news-feed { }
+        .news-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: border-color 0.2s;
+        }
+        .news-card:hover { border-color: rgba(245,87,108,0.3); }
+        .news-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .news-rank {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #fff;
+        }
+        .rank-1 { background: linear-gradient(135deg, #f5576c, #ff6b6b); }
+        .rank-2 { background: linear-gradient(135deg, #f093fb, #c56cf0); }
+        .rank-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .rank-other { background: rgba(255,255,255,0.12); }
+        .news-body { flex: 1; min-width: 0; }
+        .news-title {
+            font-size: 1.08em;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            line-height: 1.55;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .news-title:hover { color: #f5576c; }
+        .news-meta {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .news-meta .source-tag {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+            margin-right: 6px;
+        }
+        .news-snippet {
+            font-size: 0.9em;
+            color: #999;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            padding-left: 12px;
+            border-left: 3px solid rgba(255,255,255,0.1);
+        }
+        .news-summary {
+            font-size: 0.9em;
+            line-height: 1.7;
+            padding: 12px 14px;
+            background: rgba(245,87,108,0.06);
+            border-radius: 10px;
+            border-left: 3px solid rgba(245,87,108,0.5);
+            color: #d4a0ab;
+        }
+        .news-summary::before {
+            content: "总结 ";
+            font-weight: bold;
+            color: #f5576c;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 50px 20px;
+            color: #555;
+            font-size: 0.95em;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #444;
+            font-size: 0.85em;
+        }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .cat-tabs { gap: 4px; padding: 12px 0; }
+            .cat-tab { padding: 8px 14px; font-size: 0.9em; }
+            .news-card { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>每日新闻速递</h1>
+            <div class="date">2026年05月19日 星期二 · 晚间更新</div>
+        </div>
+
+        <!-- 顶部分类标签 -->
+        <div class="cat-tabs">
+            
+            <div class="cat-tab active" onclick="switchCat('科技')">
+                 科技
+            </div>
+            
+            <div class="cat-tab " onclick="switchCat('政治')">
+                ⚖️ 政治
+            </div>
+            
+            <div class="cat-tab " onclick="switchCat('军事')">
+                ️ 军事
+            </div>
+            
+            <div class="cat-tab " onclick="switchCat('娱乐')">
+                  娱乐
+            </div>
+            
+            <div class="cat-tab " onclick="switchCat('金融')">
+                  金融
+            </div>
+            
+        </div>
+
+        <!-- 各分类面板 -->
+        
+        <div class="panel active" id="panel-科技">
+            <div class="region-bar">
+                <div class="region-btn active" onclick="switchRegion(this, '科技', 'domestic')">
+                    国内<span class="count">10</span>
+                </div>
+                <div class="region-btn" onclick="switchRegion(this, '科技', 'intl')">
+                    国际<span class="count">10</span>
+                </div>
+            </div>
+
+            <div class="news-feed" id="feed-科技-domestic">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7368012.shtml" target="_blank">摩根大通高管Brunner：人工智能正从“炒作”走向实际应用</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779198521
+                                </div>
+                                
+                                <div class="news-snippet">摩根大通的投资银行和并购业务全球主席Kevin Brunner表示，对人工智能的热情已不再只是对未来的乐观预测，这项技术如今正在现实世界中产生重大影响。</div>
+                                
+                                <div class="news-summary">的投资银行和并购业务全球主席Kevin Brunner表示，对人工智能的热情已不再只是对未来的乐观预测，这项技术如今正在现实世界中产生重大影响。Brunner周二在摩根大通于波士顿举行的全球科技、媒体和通信会议上接受采访时表示：“我们实际上已经从炒作走向真正的执行和规模化。”他说：“这里的每家公司都非常关注自己的长期战略叙事是什么，并且正处于这样做的早期阶段。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytc2122526.shtml" target="_blank">微软计划年内启用印度最大数据中心 持续加大AI基础设施投入</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779198362
+                                </div>
+                                
+                                <div class="news-snippet">微软印度及南非地区总裁普尼特·昌多克（Puneet Chandok）周二接受采访时表示，微软在印度建设的最大数据中心预计将于2026年中期正式启用。</div>
+                                
+                                <div class="news-summary">印度及南非地区总裁普尼特·昌多克（Puneet Chandok）周二接受采访时表示，微软在印度建设的最大数据中心预计将于2026年中期正式启用。此举是这家科技巨头在印度市场大规模资本支出的核心举措，旨在加速布局全球最大的人工智能（AI）服务市场之一。昌多克指出，目前印度市场对Azure云服务以及Copilot 365 AI助手的需求极度旺盛。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysy3043818.shtml" target="_blank">开盘：美股周二低开 美债收益率飙升令股指承压</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779197431
+                                </div>
+                                
+                                <div class="news-snippet">北京时间5月19日晚，美股周二低开。引领AI牛市的芯片股继续遭到抛售。美国国债收益率攀升令股指承压。交易员还关注美国总统特朗普取消对伊朗打击计划后的石油市场。</div>
+                                
+                                <div class="news-summary">北京时间5月19日晚，美股周二低开。引领AI牛市的芯片股继续遭到抛售。美国国债收益率攀升令股指承压。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7351993.shtml" target="_blank">AI智能体发力推动盈利扩张，Radcom Q1每股收益超预期但营收稍逊</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196683
+                                </div>
+                                
+                                <div class="news-snippet">核心财务数据：每股收益0.28美元超预期，营收1860万美元符合预期 通信服务保障解决方案提供商Radcom Ltd．公布了2026年第一季度财报。</div>
+                                
+                                <div class="news-summary">核心财务数据：每股收益0.28美元超预期，营收1860万美元符合预期。通信服务保障解决方案提供商Radcom Ltd．公布了2026年第一季度财报。报告显示，公司营收为1860万美元，同比增长12%，略低于市场普遍预期的1876万美元。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysz9816456.shtml" target="_blank">受伊朗局势冲突推高汽油价格影响，加拿大通胀率加速升至 2.8%</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196642
+                                </div>
+                                
+                                <div class="news-snippet">周二公布的数据显示，受伊朗战事推动国际原油价格大幅上涨、汽油价格飙升影响，加拿大4月同比通胀率从3月的2.4%加速升至2.8%。</div>
+                                
+                                <div class="news-summary">周二公布的数据显示，受伊朗战事推动国际原油价格大幅上涨、汽油价格飙升影响，加拿大4月同比通胀率从3月的2.4%加速升至2.8%。这是近两年以来加拿大居民消费价格指数同比涨幅首次达到2.8%，也凸显出2月28日爆发的伊朗冲突正快速对实体经济形成传导影响。不过此次通胀数据低于市场预期，4月旅游出行、部分住宿及家具类商品价格同比出现回落。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysz9816300.shtml" target="_blank">水泥业务与大规模回购双轮驱动，Eagle Materials Q4每股收益1.91美元大超预期</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196607
+                                </div>
+                                
+                                <div class="news-snippet">核心财务数据：每股收益超预期24%，营收创纪录 Eagle Materials Inc．于周二盘前公布了2026财年第四季度及全年财报。财报显示，第四季度营收达4.791亿美元，同比增长约2%...</div>
+                                
+                                <div class="news-summary">核心财务数据：每股收益超预期24%，营收创纪录。Eagle Materials Inc．于周二盘前公布了2026财年第四季度及全年财报。GAAP每股收益为1.91美元，远高于市场一致预期的1.57美元，超预期幅度达24%。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">7</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysz9816049.shtml" target="_blank">戴尔与英伟达深化AI工厂合作，推出可扩展生产就绪型AI智能体</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196547
+                                </div>
+                                
+                                <div class="news-snippet">超5000家企业已部署，客户基数持续扩大 在拉斯维加斯举行的戴尔科技世界大会上，戴尔科技宣布与英伟达进一步扩展其“AI工厂”合作伙伴关系。</div>
+                                
+                                <div class="news-summary">超5000家企业已部署，客户基数持续扩大。科技世界大会上，戴尔科技宣布与英伟达进一步扩展其“AI工厂”合作伙伴关系。戴尔创始人兼CEO迈克尔·戴尔透露，自二月份以来，其由英伟达GPU驱动的服务器产品线已新增1000家客户，使AI工厂的客户群扩大至5000多家。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">8</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysz9815848.shtml" target="_blank">软件股悄然走出小幅牛市，部分交易员看涨后续行情</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196499
+                                </div>
+                                
+                                <div class="news-snippet">软件板块持续已久的低迷行情是否即将落幕？ 在半导体板块连续两日拖累纳斯达克 100 指数走低之际，软件板块已然悄然企稳回暖。 安硕拓展科技软件行业...</div>
+                                
+                                <div class="news-summary">软件板块持续已久的低迷行情是否即将落幕。在半导体板块连续两日拖累。100 指数走低之际，软件板块已然悄然企稳回暖。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">9</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7349650.shtml" target="_blank">剥离亏损业务聚焦AI基础设施，Core AI全年营收大增58.6%</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196390
+                                </div>
+                                
+                                <div class="news-snippet">核心财务数据：持续经营业务营收5520万美元 Core AI Holdings Inc．公布2025财年财报。财报显示，公司持续经营业务营收达5520万美元，较2024年的3480万美元增长58.6%...</div>
+                                
+                                <div class="news-summary">核心财务数据：持续经营业务营收5520万美元。Core AI Holdings Inc．公布2025财年财报。财报显示，公司持续经营业务营收达5520万美元，较2024年的3480万美元增长58.6%，创下历史新高。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">10</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7348973.shtml" target="_blank">并购驱动首笔营收，美国家族办公室一季度扭亏为盈</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196316
+                                </div>
+                                
+                                <div class="news-snippet">核心财务数据：从零收入到微利 美国家族办公室公司公布2026年第一季度财报。报告期内，公司净营收达78.3万美元，而去年同期为零。</div>
+                                
+                                <div class="news-summary">核心财务数据：从零收入到微利。美国家族办公室公司公布2026年第一季度财报。报告期内，公司净营收达78.3万美元，而去年同期为零。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+
+            <div class="news-feed" id="feed-科技-intl" style="display:none">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/ckgplxdxdg4o/trad?at_medium=RSS&at_campaign=rss" target="_blank">科學家如何反擊佔領城市下水道的「脂肪山」</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Mon, 18 May 2026 00:16:24 GMT
+                                </div>
+                                
+                                <div class="news-snippet">下水道內油脂與垃圾結合形成「脂肪山」，在全球城市造成堵塞及污染問題。各地正利用人工智能與機器人技術，提早偵測並清理這些隱藏於地下的巨大威脅。</div>
+                                
+                                <div class="news-summary">「我在咖啡店等候卡布奇諾時，看見咖啡師將大量牛奶倒入排水口，」她說。若這情況在下水道中出現，可能會促成脂肪山形成。」她指出，芝士初期柔軟，其後會逐漸變硬，「脂肪山亦非常相似。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/ckgpdl5038ro/trad?at_medium=RSS&at_campaign=rss" target="_blank">紅毯、國宴、會談、台灣、黃仁勳：特朗普重返北京後的幾大關鍵時刻</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Thu, 14 May 2026 11:48:48 GMT
+                                </div>
+                                
+                                <div class="news-snippet">特朗普重返北京，與習近平展開備受矚目的元首峰會。紅毯、國宴與高規格歡迎儀式背後，真正的焦點落在AI晶片、關稅、台灣與伊朗局勢等敏感議題。馬斯克與黃仁勳罕見現身人民大會堂，也讓這場峰會充滿濃厚的科技博弈色彩。</div>
+                                
+                                <div class="news-summary">天壇建於明代、可追溯至15世紀，是中國古代皇帝祭天祈穀的重要場所，也象徵「天地相連」。其中，黃仁勳在會前臨時被加入代表團名單，引發外界關注。在軍樂隊演奏下，習近平與特朗普並肩走過紅毯，共同檢閱中國解放軍三軍儀仗隊，隨後步入會場展開正式會談。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/space/2026/05/vast-space-seeks-to-diversify-by-building-satellites-as-well-as-space-stations/" target="_blank">In addition to space stations, Vast says it will now build high-power satellites</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Tue, 19 May 2026 13:00:45 +0000
+                                </div>
+                                
+                                <div class="news-snippet">"Every single successful space company is diversified in its products."</div>
+                                
+                                <div class="news-summary">As part of its plan to develop a private space station, Vast Space built and then launched a small demonstration spacecraft in early November. This vehicle then completed dozens of test objectives with flying colors before making a successful de-orbit three months later.。The mission, which tested power, propulsion, tracking, and a multitude of other technologies needed for Vast’s Haven-1 space station, was evidently so successful that the company is ready to use its spaceflight capabilities for other purposes. The Long Beach, California-based company announced Tuesday that it plans to begin selling high-powered satellite buses.。“Every single successful space company is diversified in its products,” said Max Haot, chief executive of Vast Space, in an interview. “So for us it really was a question of when, not if.”。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/tech-policy/2026/05/iran-demands-big-tech-pay-fees-for-undersea-internet-cables-in-strait-of-hormuz/" target="_blank">Iran demands Big Tech pay fees for undersea Internet cables in Strait of Hormuz</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Tue, 19 May 2026 11:00:49 +0000
+                                </div>
+                                
+                                <div class="news-snippet">Iran's claim over subsea chokepoint pushes US tech companies to overland fiber.</div>
+                                
+                                <div class="news-summary">Iran claims it will charge US tech companies fees for using undersea Internet cables that run beneath the contested Strait of Hormuz shipping lanes. The war has already halted multiple projects and led to the suspension of cable repairs in the region—and the latest Iranian threats may accelerate efforts by Big Tech and Gulf countries to find alternative routes for bypassing the Strait of Hormuz’s digital chokepoint.。The latest assertions of Iranian authority over the Strait of Hormuz were announced in a brief statement by Ebrahim Zolfaghari, a spokesperson for Iran’s military and the Islamic Revolutionary Guard Corps. “We will impose fees on internet cables” Zolfaghari wrote in a。. It was not immediately clear how Iran might implement such fees or impose its rules on cable projects, given that the majority of routes pass through Oman-controlled waters.。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/health/2026/05/ebola-outbreak-who-declares-emergency-us-restricts-travel-american-infected/" target="_blank">Ebola outbreak: WHO declares emergency, US restricts travel, American infected</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 20:41:14 +0000
+                                </div>
+                                
+                                <div class="news-snippet">CDC is working to move the infected American and six others to Germany.</div>
+                                
+                                <div class="news-summary">The Ebola outbreak first reported in the Democratic Republic of the Congo on Friday has seemingly escalated quickly into a large, uncontrolled multinational outbreak.。As of May 17, there were 10 confirmed cases, 336 suspected cases, and 88 deaths in the DRC, as well as two confirmed cases and one death in neighboring Uganda, according to the latest data from the US Centers for Disease Control and Prevention, which has offices in the region. The numbers already put the outbreak within the top 10 Ebola outbreaks recorded by size, though still far from the worst—the 2014–2016 West African outbreak had over 28,000 cases and 11,000 deaths.。International emergency。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/tech-policy/2026/05/legal-fail-dont-use-ai-to-sue-facebook-users-for-calling-you-a-bad-date/" target="_blank">Legal fail: Don’t use AI to sue Facebook users for calling you a bad date</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 20:27:15 +0000
+                                </div>
+                                
+                                <div class="news-snippet">Fake citations dashed a dude’s “Are We Dating the Same Guy” revenge lawsuit.</div>
+                                
+                                <div class="news-summary">An attempt to pressure Meta into removing a critical post from a Chicago Facebook group called “Are We Dating the Same Guy” may end in sanctions for lawyers whose takedown arguments appeared to rely on fake AI citations to support doxing claims.。The case had already been dismissed with prejudice by a district court, which ruled there was no way to amend the complaint to possibly save it. But Nikko D’Ambrosio—who accused more than two dozen women of defaming him and blamed Meta for supposedly boosting the post to profit off its “entertainment value”—appealed anyway.。Perhaps he felt confident despite his likely tough odds because he was relying on MarcTrent.AI, a law firm that。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">7</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/space/2026/05/one-mars-spacecraft-two-senators-and-a-cloud-of-questions/" target="_blank">One Mars spacecraft, two senators, and a cloud of questions</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 19:49:00 +0000
+                                </div>
+                                
+                                <div class="news-snippet">"I think there's plenty of fire lit under them already."</div>
+                                
+                                <div class="news-summary">NASA released a much-anticipated。contract solicitation。for a Mars-orbiting spacecraft late last week, kicking off what is sure to be a hotly contested and potentially controversial procurement.。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">8</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/science/2026/05/1000-year-old-burial-reveals-close-bonds-between-people-and-dingoes/" target="_blank">Australian Aboriginals cared for a dingo's grave for decades</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 18:37:55 +0000
+                                </div>
+                                
+                                <div class="news-snippet">For some ancient Aboriginal Australian communities, dingoes were part of the family.</div>
+                                
+                                <div class="news-summary">A thousand years ago, the ancestors of today’s Barkindji people carefully buried a dingo (or garli, in the Barkindji language) in a mound of shells.。Archaeologists recently studied the burial in what’s now New South Wales, Australia. They found that the Barkindji ancestors had buried the dingo with the same care and ceremony as any beloved human member of the community and looked after the grave for centuries. The burial reveals that dingoes were, as Australian Museum and University of Sydney archaeologist and study co-author Amy Way puts it, “deeply valued and loved” by ancient people in Australia.。The long-lost dingo。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">9</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/tech-policy/2026/05/elon-musk-loses-trial-accusing-sam-altman-openai-of-stealing-a-charity/" target="_blank">Elon Musk took too long to sue OpenAI, jury unanimously agrees</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 18:09:41 +0000
+                                </div>
+                                
+                                <div class="news-snippet">Musk plans to appeal after judge immediately affirmed the jury's decision.</div>
+                                
+                                <div class="news-summary">Elon Musk took too long to file his lawsuit that accused OpenAI of stealing a charity, a nine-person jury unanimously decided Monday.。sued OpenAI in 2024。for making a “fool” out of him after Musk donated $38 million to kick-start OpenAI as a nonprofit, only to later be blindsided when OpenAI created a for-profit arm that he felt gutted funding for the charity while enriching executives like Sam Altman and Greg Brockman.。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">10</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://arstechnica.com/science/2026/05/pompeii-victim-idd-as-a-likely-doctor/" target="_blank">Pompeii victim ID'd as a likely doctor</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">ArsTechnica</span>
+                                    Mon, 18 May 2026 18:03:32 +0000
+                                </div>
+                                
+                                <div class="news-snippet">New X-rays and CT scans showed small case with locking mechanism containing metal instruments.</div>
+                                
+                                <div class="news-summary">Archaeologists used a combination of advanced CT scans and 3D digital reconstruction to identify one of the Pompeii victims who died in 79 CE during the eruption of Mount Vesuvius as most likely having been a Roman doctor, according to。an announcement。by the Pompeii Archaeological Park.。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+        </div>
+        
+        <div class="panel " id="panel-政治">
+            <div class="region-bar">
+                <div class="region-btn active" onclick="switchRegion(this, '政治', 'domestic')">
+                    国内<span class="count">10</span>
+                </div>
+                <div class="region-btn" onclick="switchRegion(this, '政治', 'intl')">
+                    国际<span class="count">10</span>
+                </div>
+            </div>
+
+            <div class="news-feed" id="feed-政治-domestic">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7367369.shtml" target="_blank">美国财长贝森特谈日本：外汇过度波动是不可取的</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779198440
+                                </div>
+                                
+                                <div class="news-snippet">美国财政部长贝森特表示，“日本经济基本面强劲，过度的汇率波动并不可取。” 贝森特在X平台发文称，他“相信日本央行行长将成功指导日本的货币政策”。</div>
+                                
+                                <div class="news-summary">美国财政部长贝森特表示，“日本经济基本面强劲，过度的汇率波动并不可取。贝森特在X平台发文称，他“相信日本央行行长将成功指导日本的货币政策”。受上述言论影响，美元兑日元一度跌至盘中低点。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymuma3151678.shtml" target="_blank">爱沙尼亚称北约战机首次在其领空击落无人机 乌克兰防长已就此致歉</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779193904
+                                </div>
+                                
+                                <div class="news-snippet">爱沙尼亚国防部长表示，北约一架战机首次在该国上空击落一架无人机。波罗的海国家持续面临无人机闯入领空的问题。 爱沙尼亚国防部长Hanno...</div>
+                                
+                                <div class="news-summary">爱沙尼亚国防部长表示，北约一架战机首次在该国上空击落一架无人机。波罗的海国家持续面临无人机闯入领空的问题。爱沙尼亚国防部长Hanno Pevkur周二在塔林对记者表示：“在该飞行器进入爱沙尼亚之前，我们的防空雷达和空军系统已识别出可能的空中威胁。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymumc9915862.shtml" target="_blank">美债抛售暂缓，交易员关注30年期收益率或创1999年来新高</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779191773
+                                </div>
+                                
+                                <div class="news-snippet">周二早盘，美国国债收益率小幅走低，前一交易日的跌势有所缓解，交易员正在权衡各大央行对通胀担忧重燃的应对措施。 作为美国政府借贷关键基准的10年期美国国债收益率周二...</div>
+                                
+                                <div class="news-summary">周二早盘，美国国债收益率小幅走低，前一交易日的跌势有所缓解，交易员正在权衡各大央行对通胀担忧重燃的应对措施。作为美国政府借贷关键基准的10年期美国国债收益率周二早盘下跌逾1个基点，报4.6073%。对政治风险更为敏感的30年期美国国债收益率最后持稳于5.1428%。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/tech/digi/2026-05-19/doc-inhymivp7492818.shtml" target="_blank">4.8 万人大罢工逼近，三星与工会分歧缩小</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国际</span>
+                                    1779173443
+                                </div>
+                                
+                                <div class="news-snippet">IT之家 5 月 19 日消息，据路透社报道，谈判调解人士周二表示，在韩国政府与各大企业团体纷纷施压、力求避免一场迫在眉睫且破坏力巨大的长期罢工之际...</div>
+                                
+                                <div class="news-summary">IT之家 5 月 19 日消息，据路透社报道，谈判调解人士周二表示，在韩国政府与各大企业团体纷纷施压、力求避免一场迫在眉睫且破坏力巨大的长期罢工之际，三星电子与其韩国工会之间的部分分歧已有所缩小。双方正争取在本周四近 4.8 万名员工开启为期 18 天的停工行动前，敲定奖金发放相关协议。三星出口额占韩国总出口量近四分之一，如此规模和时长的罢工或将对韩国经济造成重创。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/tech/digi/2026-05-19/doc-inhymcpp2337299.shtml" target="_blank">闪迪韩国：向消费级应用分配的 NAND 闪存供应量将保持不变</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国际</span>
+                                    1779170394
+                                </div>
+                                
+                                <div class="news-snippet">IT之家 5 月 19 日消息，闪迪 (Sandisk) 韩国今日在首尔举行了 SANDISK Optimus 系列固态硬盘和 2026 世界杯联名产品发布会。</div>
+                                
+                                <div class="news-summary">IT之家 5 月 19 日消息，闪迪 (Sandisk) 韩国今日在首尔举行了 SANDISK Optimus 系列固态硬盘和 2026 世界杯联名产品发布会。根据韩媒 ETNEWS 报道，闪迪韩国负责人 심영철 在活动上表示：。同一份报道中还提到“闪迪虽然也会优先将产能分配给企业客户，。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/tech/shenji/2026-05-19/doc-inhyksxs0170773.shtml" target="_blank">“毛巾少爷”石展承回应洁丽雅传闻：我们一大家子感情很好很团结，绝对没有网上说的离谱关系</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国际</span>
+                                    1779152013
+                                </div>
+                                
+                                <div class="news-snippet">5月19日消息，针对近期网络传闻，“毛巾少爷”石展承昨日在社媒发声： “大家好我是小毛巾，打扰各位朋友了。针对近日网上不实言论，我们未第一时间声明澄清是不想占用公共资...</div>
+                                
+                                <div class="news-summary">5月19日消息，针对近期网络传闻，“毛巾少爷”石展承昨日在社媒发声： “大家好我是小毛巾，打扰各位朋友了。针对近日网上不实言论，我们未第一时间声明澄清是不想占用公共资源，不想扩大舆论，让有心者得逞。我以前最开心的事情就是在我的评论区所有的内容都是善意的，我们一大家子也能感受到网友们的善意，我们一大家子感情很好很团结，也绝对没有网上说的离谱关系。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">7</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/c/2024-06-19/doc-inazfuhn3018380.shtml" target="_blank">北京一外交号牌车辆因停车引发纠纷 警方通报</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1718765724
+                                </div>
+                                
+                                <div class="news-snippet">来源：平安北京 近日，一外交号牌车辆在朝阳区广信街与广泰东路十字路口处因停车引发纠纷。经警方初步调查，涉事车辆登记在一国际组织名下，6月16日上午，徐某某（男...</div>
+                                
+                                <div class="news-summary">近日，一外交号牌车辆在朝阳区广信街与广泰东路十字路口处因停车引发纠纷。经警方初步调查，涉事车辆登记在一国际组织名下，6月16日上午，徐某某（男，61岁）与余某（女，58岁，就职于该国际组织）夫妇驱车至该地点，将车停靠在机动车道上，违反停车管理规定，影响过往车辆通行，后在他人提醒时仍拒绝挪车，并辱骂他人、发表不当言论，造成不良社会影响。对于上述交通违法情况，公安交管部门依法作出罚款处罚。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">8</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://sports.sina.com.cn/o/2026-05-19/doc-inhymqci2205657.shtml" target="_blank">全面开练，郑钦文迎法网逆风之战！</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪财经</span>
+                                    1779180844
+                                </div>
+                                
+                                <div class="news-snippet">2026年法国网球公开赛的资格赛争夺已经全面开打，在已经结束的几场比赛中，中国金花郭涵煜直落两盘击败了布尔加鲁，终于拿到了个人大满贯赛事的单打首胜...</div>
+                                
+                                <div class="news-summary">2026年法国网球公开赛的资格赛争夺已经全面开打，在已经结束的几场比赛中，中国金花郭涵煜直落两盘击败了布尔加鲁，终于拿到了个人大满贯赛事的单打首胜，另一位金花袁悦则稍显遗憾，1-2被英国球员达特逆转，整场比赛耗时超过三个小时，后者也终于终结了红土赛场三年没有获得胜利的尴尬局面。孙发京在面对男单资格赛头号种子德容的时候也是打得有来有回，最终以输掉双抢七的方式无缘晋级下一轮，要知道孙发京已经很久没有打过红土比赛了，所以能够有这样的比分还是相当不错的。当然我们今天关注的重点是中国金花郑钦文，作为目前中国网球绝对的话题人物和领军球员，她在昨天就展开了几个小时的赛前训练，其中就包括正反手、发球接发球和训练赛等多种形式。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">9</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://sports.sina.com.cn/o/2026-05-19/doc-inhymivm2301234.shtml" target="_blank">彭世坤、李咏臻留洋双双夺冠，中国男排副攻线迎黄金期</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪财经</span>
+                                    1779178612
+                                </div>
+                                
+                                <div class="news-snippet">2026年5月17日，日本SV男排联赛总决赛落幕，大阪布鲁顿（大阪蓝鸟）以3-0（25-22、25-20、25-18）横扫卫冕冠军三得利太阳鸟，总比分2-1夺冠，时隔7年再登巅峰...</div>
+                                
+                                <div class="news-summary">2026年5月17日，日本SV男排联赛总决赛落幕，大阪布鲁顿（大阪蓝鸟）以3-0（25-22、25-20、25-18）横扫卫冕冠军三得利太阳鸟，总比分2-1夺冠，时隔7年再登巅峰，斩获队史第8冠。中国男排副攻彭世坤随队捧杯，成为冠军成员。至此，中国男排两大主力副攻彭世坤、李咏臻，2026年留洋之旅均以冠军收尾，堪称双喜临门。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">10</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://36kr.com/newsflashes/3816218027983239?f=rss" target="_blank">ST金鸿：“松树资本产业导入上市公司”等属不实言论</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">36氪</span>
+                                    2026-05-19 20:57:43  +0800
+                                </div>
+                                
+                                <div class="news-snippet">36氪获悉，ST金鸿发布关于市场传闻的澄清及风险提示的公告，近期，公司关注到部分财经媒体平台有投资者发帖称李文浩系洛阳国资委派、本次实控人变更系配合洛阳、与韩国三星海力士有关、松树资本产业导入上市公司等。公司在此郑重澄清，以上信息均属不实言论。敬请广大投资者理性投资，注意风险。</div>
+                                
+                                <div class="news-summary">36氪APP
+让一部分人先看到未来</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+
+            <div class="news-feed" id="feed-政治-intl" style="display:none">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/c4g09912wgdo/trad?at_medium=RSS&at_campaign=rss" target="_blank">解讀「中美建設性戰略穩定關係」：習近平新詞反映兩國關係現實境遇</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Tue, 19 May 2026 09:51:58 GMT
+                                </div>
+                                
+                                <div class="news-snippet">又一個中國外交關係名詞在特朗普與習近平的會談中誕生，但在中國官方宣傳「積極評價」外，觀望氛圍同時存在。</div>
+                                
+                                <div class="news-summary">美國鳳凰城外交關係委員會（Phoenix Committee on Foreign Relations）主席兼總裁麥艾維博士（Dr Lily McElwee）認為，在當前全球多場棘手衝突持續之際，新詞語的出現，顯示兩國領導人正試圖尋求某種穩定。「從本月特朗普與習近平在伊朗戰事期間會晤，以及雙方亦為今年至少再進行三次會面留下可能性，可以看出這一點。高敬文教授認為，「中美建設性戰略穩定關係」只是將「中美新型大國關係」換個表述，「其核心理念一致：控制分歧，避免公開衝突」，也可能是「某種不以G2（兩國集團）之名行事的G2格局」：「若中美能夠妥善管理雙邊關係，並構建某種「戰略穩定」，世界基本上將保持穩定，或避免陷入全面混亂。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/c7753l73y75o/trad?at_medium=RSS&at_campaign=rss" target="_blank">秘密警察與政治宣傳：在美國監視僑民的中國特工</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Mon, 18 May 2026 13:35:40 GMT
+                                </div>
+                                
+                                <div class="news-snippet">專家指出，美國兩宗間諜案件突顯出過去十年中國如何試圖在全球擴大影響力。</div>
+                                
+                                <div class="news-summary">檢方稱，她曾發表文章，聲稱中國新疆不存在種族滅絕，「也不存在所謂強迫勞動」。近年來，中國在西北部新疆維吾爾自治區對以穆斯林為主的維吾爾族群的對待方式，備受國際關注；有證據顯示，數以百萬計的維吾爾人被拘押在營地並從事強迫勞動。中國則表示，這些設施僅用於「再教育」。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/c5y7q592pdqo/trad?at_medium=RSS&at_campaign=rss" target="_blank">特朗普稱因波斯灣國家請求，取消對伊朗新一波攻擊</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Tue, 19 May 2026 04:56:07 GMT
+                                </div>
+                                
+                                <div class="news-snippet">特朗普（川普）表示，應卡達、沙烏地阿拉伯等波灣國家請求，已取消原訂週二對伊朗的軍事攻擊，因為「嚴肅談判正在進行」。他強調伊朗絕不能擁有核武器，若無法達成協議，美國將準備全力大規模攻擊。</div>
+                                
+                                <div class="news-summary">特朗普在Truth Social平台發文指出，卡達、沙烏地阿拉伯與阿拉伯聯合大公國的領導人請求他這麼做。他又表示已獲悉將達成一項美國「非常可以接受」的協議，並強調「伊朗絕不能擁有核武器。波斯灣阿拉伯國家最擔心的是，若美國繼續攻擊，伊朗將如何報復。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/cgjpngjwgwno/trad?at_medium=RSS&at_campaign=rss" target="_blank">普京訪華：中俄關係現在有多緊密</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Tue, 19 May 2026 02:40:07 GMT
+                                </div>
+                                
+                                <div class="news-snippet">根據兩國已經釋出的消息，普京訪華期間中俄將簽署最高級別的聯合聲明、以及系列雙邊文件。兩國元首還會共同出席「中俄教育年」開幕式。</div>
+                                
+                                <div class="news-summary">但中俄之間的領土問題長期備受關注，以符拉迪沃斯托克（中國稱海參崴）為例，今年5月，俄方在當地舉行「衛國戰爭勝利81週年」國際兒童遊行，有身著八路軍服飾的中方小學生穿過現場活動主席台。中國官媒《人民日報》旗下的微信公眾號以《海參崴的街頭，中國孩子究竟在為誰歡呼》為題批評，稱這種行為「主動把自家一年級的小孩帶到祖宗被搶走的土地上排隊、揮旗、喊口號、給別人當背景板」。俄羅斯對中國的直接投資向來規模不大，2024年俄羅斯對中國的投資存量在15億美元左右。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/cr5pevzv76yo/trad?at_medium=RSS&at_campaign=rss" target="_blank">特朗普結束訪華後，中俄即宣佈普京下週二起對中國進行國事訪問</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Mon, 18 May 2026 00:11:37 GMT
+                                </div>
+                                
+                                <div class="news-snippet">普京訪華的消息，是在特朗普結束訪華行程後不足24小時公佈，普京的訪華行程亦緊接在特朗普到訪之後的一星期舉行。</div>
+                                
+                                <div class="news-summary">他認為，在這三個國家當中，目前中國手上是「握有最多的牌」，黃偉國指，自特朗普重返白宮之後，美國與歐洲國家的關係變得疏離、緊張，「看到歐洲國家也不斷訪問中國，某程度上也在維持沒什麼衝突的關係」，認為中國在比較混亂的局勢中，能夠嘗試透過外交的層面與一些西方國家建立關係，「拉攏到敵人的盟友到自己的那邊。政治文化研究學者、時事評論員黃偉國認為，中國、美國、俄羅斯三個國家之間本身的關係也有不同的角力，特朗普本身的訪華行程亦不會影響中俄之間的關係，「表面上，美國和俄羅斯好像是一個對立的關係，但美方希望在俄烏戰爭上有一個角色，可以塑造美國是一個和平締造者的形象。普京與習近平上一次的會面，是於去年9月出席上海合作組織年度峰會、並於其後到訪北京出席抗戰勝利80週年閱兵。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/czx2n9v7dq4o/trad?at_medium=RSS&at_campaign=rss" target="_blank">賴清德：台灣不會挑釁，也不會放棄主權</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Mon, 18 May 2026 06:23:36 GMT
+                                </div>
+                                
+                                <div class="news-snippet">在特朗普訪華並與習近平就台灣問題進行討論之後，台灣總統賴清德首次直接作出回應。</div>
+                                
+                                <div class="news-summary">他寫道：「在中國始終不放棄武力併吞台灣，且持續擴充軍力，企圖改變區域及兩岸現狀下，美國持續對台軍售，並深化台美安全合作，乃至為必要，也是維護區域和平穩定的關鍵要素。在特朗普（川普）與習近平舉行了一場事關重大的峰會並討論台灣獨立議題後，台灣總統賴清德表示，台灣不會挑釁引發任何衝突，但也不會放棄自身主權。賴清德在臉書寫道：「台灣不會挑釁，不會升高衝突，但也不會在壓力下放棄國家主權與尊嚴，以及民主自由的生活方式。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">7</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/cq8p38k412lo/trad?at_medium=RSS&at_campaign=rss" target="_blank">「這可能是你最後一次聽到我的聲音」：戰爭以來伊朗政治處決激增</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Mon, 18 May 2026 08:41:24 GMT
+                                </div>
+                                
+                                <div class="news-snippet">自2月28日美國與以色列攻擊伊朗以來，聯合國已確認至少32名政治犯被處決。</div>
+                                
+                                <div class="news-summary">上個月下旬，國營電視台播放了一則21歲空手道冠軍薩桑・阿扎德瓦爾（Sasan Azadvar）被處決的報導。他來自中部城市伊斯法罕，被裁定犯有「moharabeh」（「與神作戰」）以及「有效協助敵人」，因為他在1月抗議中襲擊警察。「伊斯蘭共和國持續透過任意指控異見者和批評者為『以色列間諜』來對民眾進行系統性鎮壓，卻未提供可信證據或保障公平審判標準，」該組織的艾瓦爾・謝赫（Aywar Shekhi）向BBC表示，「許多生命正處於危險之中。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">8</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/c0l271rg2j0o/trad?at_medium=RSS&at_campaign=rss" target="_blank">特朗普發出警告後，台灣仍堅稱本身就是主權獨立的國家</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Sun, 17 May 2026 04:00:13 GMT
+                                </div>
+                                
+                                <div class="news-snippet">美國總統在北京峰會結束後，警告台灣不要正式宣佈獨立。</div>
+                                
+                                <div class="news-summary">特朗普是在北京舉行為期兩天的峰會後，發表了上述言論。他在會後表示，自己對這個自治島嶼「沒有做出任何承諾」。中國聲稱台灣是其領土的一部分，並且不排除以武力統一的可能。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">9</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/c362jr2085yo/trad?at_medium=RSS&at_campaign=rss" target="_blank">特朗普訪華：中美元首會談逾2小時 結束後同遊天壇</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Thu, 14 May 2026 09:51:25 GMT
+                                </div>
+                                
+                                <div class="news-snippet">美國總統特朗普抵達北京展開為期三天的國事訪問，並於周四（5月14日）在人民大會堂與中國國家主席習近平舉行會談。會談歷時逾兩小時，結束後，習近平陪同特朗普前往北京天壇參觀。</div>
+                                
+                                <div class="news-summary">有600年歷史的天壇，在中國外交語境中具有重要象徵意義。特朗普成為繼福特（Gerald Ford）總統後，50年來首位參觀該處的美國元首。這是特朗普重返白宮後首次對華國事訪問，雙方在關稅衝突、科技競爭與地緣政治緊張升溫的背景下，進行了歷時超過兩小時的對話。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">10</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://www.bbc.com/zhongwen/articles/cwy2xnddpejo/trad?at_medium=RSS&at_campaign=rss" target="_blank">「特習會」引發台灣「菜單焦慮」 美國會否改口「反對台獨」？</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">BBC中文</span>
+                                    Tue, 12 May 2026 13:04:27 GMT
+                                </div>
+                                
+                                <div class="news-snippet">美國總統特朗普（川普）訪華引發台灣「菜單焦慮」，外界擔憂美國會因中國施壓而改變對台政策。</div>
+                                
+                                <div class="news-summary">美國總統特朗普（川普）將於5月13至15日訪華，並與中國國家主席習近平舉行會談，預計將涉及關稅、經濟貿易合作以及伊朗戰事等議題。而從會前的雙方動作來看，外界關注「台灣問題」將成為此次「特習會」的焦點之一。對此，台灣方面擔憂其成為美中雙方的「談判菜單」。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+        </div>
+        
+        <div class="panel " id="panel-军事">
+            <div class="region-bar">
+                <div class="region-btn active" onclick="switchRegion(this, '军事', 'domestic')">
+                    国内<span class="count">2</span>
+                </div>
+                <div class="region-btn" onclick="switchRegion(this, '军事', 'intl')">
+                    国际<span class="count">0</span>
+                </div>
+            </div>
+
+            <div class="news-feed" id="feed-军事-domestic">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytc2124458.shtml" target="_blank">G-7：伊朗战争推高经济和通胀风险 财政响应措施应审慎有度</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779198595
+                                </div>
+                                
+                                <div class="news-snippet">随着伊朗战争对全球经济增长和通胀构成的风险加大，七国集团（G-7）财长承诺不会过度动用财政援助措施。 G-7官员周二在巴黎发布公报。</div>
+                                
+                                <div class="news-summary">随着伊朗战争对全球经济增。七国集团（G-7）财长承诺不会过度动用财政援助措施。G-7官员周二在巴黎发布公报。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/s/2024-06-13/doc-inaypvar4309071.shtml" target="_blank">退休大爷花6元买到“军事机密” 立马报警送回</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1718234089
+                                </div>
+                                
+                                <div class="news-snippet">国企职工张大爷退休后爱好收集军事类报刊读物，是个妥妥的军事迷。最近张大爷在家门口花了六块钱，没曾想竟买到了“军事机密”。这是怎么回事？让我们一探究竟。</div>
+                                
+                                <div class="news-summary">国企职工张大爷退休后爱好收集军事类报刊读物，是个妥妥的军事迷。最近张大爷在家门口花了六块钱，没曾想竟买到了“军事机密”。一天，张大爷在小区附近散步时，在一家废品收购站门口看到两个蛇皮袋子，里面装满了刚收购回来的纸质书本。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+
+            <div class="news-feed" id="feed-军事-intl" style="display:none">
+                
+                    <div class="empty-msg">暂无国际军事新闻</div>
+                
+            </div>
+        </div>
+        
+        <div class="panel " id="panel-娱乐">
+            <div class="region-bar">
+                <div class="region-btn active" onclick="switchRegion(this, '娱乐', 'domestic')">
+                    国内<span class="count">6</span>
+                </div>
+                <div class="region-btn" onclick="switchRegion(this, '娱乐', 'intl')">
+                    国际<span class="count">0</span>
+                </div>
+            </div>
+
+            <div class="news-feed" id="feed-娱乐-domestic">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysy3038484.shtml" target="_blank">GTA 6预购传闻引爆市场，Take-Two股价周涨10%领跑游戏板块</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196461
+                                </div>
+                                
+                                <div class="news-snippet">预购传言引股价异动 受《侠盗猎车手VI》预购即将开启的市场传闻刺激，Take-Two Interactive Software股价上周累计上涨约10%。该传闻源于一封据称发给百思买联盟营销合作伙...</div>
+                                
+                                <div class="news-summary">受《侠盗猎车手VI》预购即将开启的市场传闻刺激，Take-Two Interactive Software股价上周累计上涨约10%。该传闻源于一封据称发给。联盟营销合作伙伴的电子邮件，其中提及预购窗口将于5月18日开启，持续至5月21日，并提供5%的销售佣金。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/s/2026-05-19/doc-inhymytf7348059.shtml" target="_blank">连续两日跌停！巨力索具市值蒸发超35亿！</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779194892
+                                </div>
+                                
+                                <div class="news-snippet">来源：资本秘闻 因涉嫌信披误导性陈述违法违规遭证监会立案后，知名男演员杨子家族旗下索具企业巨力索具（002342）于5月18日、19日连续走出两个跌停，总市值蒸发约35...</div>
+                                
+                                <div class="news-summary">登录新浪财经APP 搜索【信披】查看更多考评等级。，权威，专业，及时，全面，助您挖掘潜力主题机会。因涉嫌信披误导性陈述违法违规遭证监会立案后，知名男演员杨子家族旗下索具企业。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/s/2024-06-26/doc-incaatqz5925853.shtml" target="_blank">被追债830万港元？古天乐首次回应</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1719413905
+                                </div>
+                                
+                                <div class="news-snippet">来源：新快报  6月25日，古天乐在出席活动时，被问早前被娱乐公司光尚文化控股（前名为太阳娱乐）主席唐才智追讨830万港元，他表示交由律师处理。</div>
+                                
+                                <div class="news-summary">6月25日，古天乐在出席活动时，被问早前被娱乐公司光尚文化控股（前名为太阳娱乐）主席唐才智追讨830万港元，他表示交由律师处理。据港媒此前报道，演员古天乐日前遭太阳娱乐文化（现称光尚文化控股）主席唐才智向香港高等法院上诉，向他追讨830万港元。其间古向唐私人借贷830万港元用作注资，至今已过去十年仍未还款。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/s/2024-06-10/doc-inayfcxp9532862.shtml" target="_blank">“非常痛苦”，董宇辉突然自曝</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1717979439
+                                </div>
+                                
+                                <div class="news-snippet">近日，董宇辉又有新动作，他首次独立担纲主持的一档谈话类节目正式上线。 在采访完颜慧德时，董宇辉说，因为直播这件事，导致自己的父母长期被骚扰...</div>
+                                
+                                <div class="news-summary">近日，董宇辉又有新动作，他首次独立担纲主持的一档谈话类节目正式上线。之后，董宇辉在和邓静的对话中，自曝睡眠特别差，有时一夜吃两次，睡了还不如不睡，非常痛苦。“12点左右到家，洗漱完之后，12点半躺在床上开始吃前两颗安眠药，运气好的话能在2点左右睡着，运气不好的话会在3点左右吃后面几颗药，5点6点左右能睡着一会，一般就睡着一个多小时再醒来，就非常痛苦”。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/s/2024-06-05/doc-inaxryqh5995663.shtml" target="_blank">张雪峰一门课卖近两万元，割韭菜还是真刚需？</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1717550943
+                                </div>
+                                
+                                <div class="news-snippet">界面新闻记者 |查沁君 2024年高考临近，网红张雪峰再次陷入舆论漩涡。 起因是张雪峰公司峰学蔚来提供的近两万元的高考志愿填报课程（下称高报课程）被抢购一空...</div>
+                                
+                                <div class="news-summary">图片来源：界面新闻 匡达。界面新闻记者 |查沁君。2024年高考临近，网红张雪峰再次陷入舆论漩涡。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://news.sina.com.cn/s/2024-06-01/doc-inaxfqzw2790116.shtml" target="_blank">太意外！他宣布放弃！原因透露后网友大赞……</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪科技</span>
+                                    1717233988
+                                </div>
+                                
+                                <div class="news-snippet">来源：新闻晨报 近日， 第二十九届上海电视节白玉兰奖 公布入围名单。 爆款剧《繁花》与《追风者》 却因演员报奖名单引发争议。 其中...</div>
+                                
+                                <div class="news-summary">第二十九届上海电视节白玉兰奖。却因演员报奖名单引发争议。其中，“最佳男主角”“最佳女主角”“最佳男配角”“最佳女配角”四项演员奖项提名名单里，《繁花》演员皆榜上有名。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+
+            <div class="news-feed" id="feed-娱乐-intl" style="display:none">
+                
+                    <div class="empty-msg">暂无国际娱乐新闻</div>
+                
+            </div>
+        </div>
+        
+        <div class="panel " id="panel-金融">
+            <div class="region-bar">
+                <div class="region-btn active" onclick="switchRegion(this, '金融', 'domestic')">
+                    国内<span class="count">10</span>
+                </div>
+                <div class="region-btn" onclick="switchRegion(this, '金融', 'intl')">
+                    国际<span class="count">0</span>
+                </div>
+            </div>
+
+            <div class="news-feed" id="feed-金融-domestic">
+                
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-1">1</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/s/2026-05-19/doc-inhymysz9825714.shtml" target="_blank">002047、000608，摘帽！明日停牌</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779197487
+                                </div>
+                                
+                                <div class="news-snippet">5月19日，*ST宝鹰（002047.SZ）公告称，公司撤销退市风险警示及其他风险警示的申请已获得深交所审核同意。 根据《深圳证券交易所股票上市规则》的规定...</div>
+                                
+                                <div class="news-summary">，权威，专业，及时，全面，助您挖掘潜力主题机会。（002047.SZ）公告称，公司撤销退市风险警示及其他风险警示的申请已获得深交所审核同意。根据《深圳证券交易所股票上市规则》的规定，公司股票将于2026年5月20日（星期三）开市起停牌1天，于2026年5月21日（星期四）开市起复牌，股票简称由“*ST宝鹰”变更为“宝鹰股份”，股票代码仍为“002047”，股票交易价格日涨跌幅限制变更为10%。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-2">2</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/s/2026-05-19/doc-inhymysy3049507.shtml" target="_blank">周大生“增利不增收”，一年撤减964家店</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779197132
+                                </div>
+                                
+                                <div class="news-snippet">来源：国际金融报 金价高企抑制终端零售，周大生出现“增利不增收”的情况。 5月18日下午，周大生（002867.SZ）召开2025年度网上业绩说明会，回应各类投资者关切的问题。</div>
+                                
+                                <div class="news-summary">，权威，专业，及时，全面，助您挖掘潜力主题机会。出现“增利不增收”的情况。5月18日下午，周大生（002867.SZ）召开2025年度网上业绩说明会，回应各类投资者关切的问题。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-3">3</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymysz9816824.shtml" target="_blank">瑞银上调爵士制药评级：核心业务韧性强劲，新药Ziihera成增长引擎</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196747
+                                </div>
+                                
+                                <div class="news-snippet">瑞银集团周一上调了爵士制药的股票评级，原因在于其核心业务的韧性和一款癌症治疗药物的商业化潜力令该行转为看涨。 瑞银将爵士制药的评级从“中性”上调至“买入”...</div>
+                                
+                                <div class="news-summary">集团周一上调了爵士制药的股票评级，原因在于其核心业务的韧性和一款癌症治疗药物的商业化潜力令该行转为看涨。瑞银将爵士制药的评级从“中性”上调至“买入”，并将目标价大幅上调至307美元。这一目标价较周一收盘价意味着超过33%的上涨空间。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">4</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7347501.shtml" target="_blank">信贷强劲增长16%，以色列FIBI银行一季度净利润4.8亿新谢克尔</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196172
+                                </div>
+                                
+                                <div class="news-snippet">以色列第一大国际银行公布2026年第一季度财报。报告显示，尽管面临宏观经济逆风，该行在贷款增长与资产扩张方面表现强劲。</div>
+                                
+                                <div class="news-summary">以色列第一大国际银行公布2026年第一季度财报。报告显示，尽管面临宏观经济逆风，该行在贷款增长与资产扩张方面表现强劲。财报显示，该行第一季度净利润为4.8亿新谢克尔，低于去年同期的5.3亿新谢克尔。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">5</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymytf7345369.shtml" target="_blank">Functional Brands一季度毛利率升至58.4%，上市相关非现金支出拖累净利</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779196003
+                                </div>
+                                
+                                <div class="news-snippet">健康与高性能产品创新企业Functional Brands Inc．公布2026年第一季度财报。报告期内，公司营收为165万美元，同比增长3.5%，主要得益于直接面向消费者销售渠道的需求增长。...</div>
+                                
+                                <div class="news-summary">健康与高性能产品创新企业Functional Brands Inc．公布2026年第一季度财报。报告期内，公司营收为165万美元，同比增长3.5%，主要得益于直接面向消费者销售渠道的需求增长。毛利润增至96万美元，毛利率同比提升390个基点至58.4%，反映出公司向高利润渠道转型的战略成效。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">6</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymuma3165517.shtml" target="_blank">上市成本激增致运营亏损扩大，Functional Brands Q1净亏700万美元</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779195820
+                                </div>
+                                
+                                <div class="news-snippet">Functional Brands Inc．公布2026年第一季度财报。公司营收为165万美元，同比增长3.5%，主要受益于直接面向消费者销售渠道的需求增长。</div>
+                                
+                                <div class="news-summary">公司营收为165万美元，同比增长3.5%，主要受益于直接面向消费者销售渠道的需求增长。毛利润增至96万美元，毛利率同比提升390个基点至58.4%，反映出公司向高利润渠道转型的战略成效。然而，GAAP每股亏损为0.36美元，净亏损达700万美元。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">7</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/s/2026-05-19/doc-inhymumf2229839.shtml" target="_blank">明日复牌，300069，重大重组来了</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779195511
+                                </div>
+                                
+                                <div class="news-snippet">来源：中国基金报 【导读】金利华电拟收购中科西光82.50%股权，股票明日复牌 中国基金报记者 忆山 5月19日，金利华电披露了重大资产重组事项的相关预案...</div>
+                                
+                                <div class="news-summary">，权威，专业，及时，全面，助您挖掘潜力主题机会。拟收购中科西光82.50%股权，股票明日复牌。5月19日，金利华电披露了重大资产重组事项的相关预案，并表示公司股票将于5月20日（星期三）开市起复牌。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">8</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/s/2026-05-19/doc-inhymumi7474763.shtml" target="_blank">IPO候场3年未果，“博士猎手”张现涛终要“借壳上岸”？</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779195405
+                                </div>
+                                
+                                <div class="news-snippet">来源 | 野马财经 花5亿拿下上市公司。 作者丨孙梦圆 陈宝珠 连亏三年的仁度生物（688193.SH），终于把自己卖了个好价钱。接盘方是带着海鲸药业IPO辅导三年未果...</div>
+                                
+                                <div class="news-summary">，权威，专业，及时，全面，助您挖掘潜力主题机会。（688193.SH），终于把自己卖了个好价钱。接盘方是带着海鲸药业IPO辅导三年未果、却始终没放下“A股执念”的药学博士张现涛。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">9</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymuma3158613.shtml" target="_blank">ADP：截至5月2日的四周美国私营部门就业人数平均每周增加42250人</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779194814
+                                </div>
+                                
+                                <div class="news-snippet">根据ADP Research和斯坦福数字经济实验室的初步估计，截至5月2日的四周，美国私营部门就业人数平均每周增加42250人。 ADP此前公布的4月份月度就业人数变化为增加10...</div>
+                                
+                                <div class="news-summary">根据ADP Research和斯坦福数字经济实验室的初步估计，截至5月2日的四周，美国私营部门就业人数平均每周增加42250人。ADP此前公布的4月份月度就业人数变化为增加10.9万人。ADP与斯坦福数字经济实验室于10月28日启动了每周就业数据发布。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card">
+                        <div class="news-top">
+                            <span class="news-rank rank-other">10</span>
+                            <div class="news-body">
+                                <a class="news-title" href="https://finance.sina.com.cn/stock/usstock/c/2026-05-19/doc-inhymumi7448633.shtml" target="_blank">壳牌首席执行官：满足石油需求在未来几十年仍将至关重要</a>
+                                <div class="news-meta">
+                                    <span class="source-tag">新浪国内</span>
+                                    1779193220
+                                </div>
+                                
+                                <div class="news-snippet">壳牌公司首席执行官瓦尔·萨万周二在年度股东大会上对股东们表示，过去几个月的全球事件表明，未来几十年满足石油需求仍将至关重要。</div>
+                                
+                                <div class="news-summary">壳牌公司首席执行官瓦尔·萨万周二在年度股东大会上对股东们表示，过去几个月的全球事件表明，未来几十年满足石油需求仍将至关重要。周二晚些时候，股东们将对由激进股东组织Follow This和 21 家代表 1.2 万亿美元资产的机构投资者提出的决议进行投票，该决议要求壳牌披露其战略在石油和天然气需求下降的情景下将如何表现。萨万表示，福洛威兹的问题已由壳牌现有的披露内容全面涵盖，这使股东能够在他们选择的任何价格情景下对公司财务的韧性进行建模。</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+
+            <div class="news-feed" id="feed-金融-intl" style="display:none">
+                
+                    <div class="empty-msg">暂无国际金融新闻</div>
+                
+            </div>
+        </div>
+        
+
+        <div class="footer">
+            自动生成于 2026-05-19 21:57:48 · 数据来源：腾讯新闻、央视新闻、澎湃、BBC中文、路透社等
+        </div>
+    </div>
+
+    <script>
+    function switchCat(name) {
+        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        // 激活对应标签和面板
+        event.target.closest('.cat-tab').classList.add('active');
+        document.getElementById('panel-' + name).classList.add('active');
+    }
+    function switchRegion(btn, cat, region) {
+        var bar = btn.closest('.region-bar');
+        bar.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        var panel = btn.closest('.panel');
+        panel.querySelectorAll('.news-feed').forEach(f => f.style.display = 'none');
+        document.getElementById('feed-' + cat + '-' + region).style.display = 'block';
+    }
+    </script>
+</body>
+</html>
